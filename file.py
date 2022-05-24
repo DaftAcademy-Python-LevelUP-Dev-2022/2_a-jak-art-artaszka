@@ -29,19 +29,24 @@ def sums_of_str_elements_are_equal(func):
 
 
 def format_output(*required_keys):
-    def leave_proper_keys(func):
-        def format_dict(*args, **kwargs):
-            create_keys = {k: k.split('__') for k in required_keys}
-            create_dict = func(*args, **kwargs)
-            flat_list_of_new_keys_value = [item for sublist in create_keys.values() for item in sublist]
-            for k in flat_list_of_new_keys_value:
-                if k not in create_dict.keys():
-                    raise ValueError
-            new_dict = {key: ' '.join([create_dict[v] if create_dict[v] != '' else 'Empty value' for v in value]) for
-                        key, value in create_keys.items()}
+    def decorator(func):
+        def wrapper(*args):
+            dict1 = func(*args)
+            new_dict = {}
+            for key in required_keys:
+                new_list = []
+                for i in key.split("__"):
+                    if i in dict1.keys():
+                        if dict1[i] == '':
+                            new_list.append('Empty value')
+                        else:
+                            new_list.append(dict1[i])
+                    else:
+                        raise ValueError
+                    new_dict[key] = ' '.join(new_list)
             return new_dict
-        return format_dict
-    return leave_proper_keys
+        return wrapper
+    return decorator
 
 
 def add_method_to_instance(klass):
