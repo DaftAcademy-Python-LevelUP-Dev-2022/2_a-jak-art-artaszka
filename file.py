@@ -31,19 +31,19 @@ def sums_of_str_elements_are_equal(func):
 def format_output(*required_keys):
     def decorator(func):
         def wrapper(*args):
-            dict1 = func(*args)
+            dict = func(*args)
             new_dict = {}
             for key in required_keys:
-                new_list = []
-                for i in key.split("__"):
-                    if i in dict1.keys():
-                        if dict1[i] == '':
-                            new_list.append('Empty value')
+                tmp_list = []
+                for x in key.split("__"):
+                    if x in dict.keys():
+                        if dict[x] == '':
+                            tmp_list.append('Empty value')
                         else:
-                            new_list.append(dict1[i])
+                            tmp_list.append(dict[x])
                     else:
                         raise ValueError
-                    new_dict[key] = ' '.join(new_list)
+                    new_dict[key] = ' '.join(tmp_list)
             return new_dict
         return wrapper
     return decorator
