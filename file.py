@@ -31,30 +31,23 @@ def sums_of_str_elements_are_equal(func):
 
 
 def format_output(*required_keys):
-    keys = required_keys
-
-    def dict_decorator(func):
-        def in_func(*args, **kwargs):
-            in_values = func(*args, **kwargs)
-            out_dict = dict()
-            try:
-                for key in keys:
-                    if '__' in key:
-                        list = key.split('__')
-                        value = ''
-                        for element in list:
-                            value += in_values[element] + ' '
-                        value = value[:-1]
+    def outer_wrapper(f):
+        def inner(*args, **kwargs):
+            result = f(*args, **kwargs)
+            result_dict = {}
+            for key in required_keys:
+                values = []
+                for value in key.split('__'):
+                    if value not in result.keys():
+                        raise ValueError
+                    if result[value] != '':
+                        values.append(result[value])
                     else:
-                        value = in_values[key]
-                    if value == '':
-                        value = 'Empty value'
-                    out_dict.update({key: value})
-                return out_dict
-            except:
-                raise ValueError
-        return in_func
-    return dict_decorator 
+                        values.append('Empty value')
+                result_dict[key] = ' '.join(values)
+            return result_dict
+        return inner
+    return outer_wrapper
 
 
 def add_method_to_instance(klass):
