@@ -1,3 +1,5 @@
+from functools import wraps
+
 def greeter(func):
     def inner(*args, **kwargs):
         data_from_function = func(*args, **kwargs).title()
