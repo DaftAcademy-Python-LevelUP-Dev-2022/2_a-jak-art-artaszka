@@ -29,24 +29,31 @@ def sums_of_str_elements_are_equal(func):
 
 
 def format_output(*required_keys):
-    def decorator(func):
-        def wrapper(*args):
-            dict = func(*args)
-            new_dict = {}
+    def decorator_function(decor):
+        def decoration(*args, **kwargs):
+            mod_dict = decor(*args, **kwargs)
+
+            out_dict = {}
             for key in required_keys:
-                tmp_list = []
-                for x in key.split("__"):
-                    if x in dict.keys():
-                        if dict[x] == '':
-                            tmp_list.append('Empty value')
-                        else:
-                            tmp_list.append(dict[x])
+                out_dict[key] = ""
+
+            for r_key in required_keys:
+                temp_list = []
+                temp_len = 0
+                for sub_key in str(r_key).split("__"):
+                    if sub_key in dict(mod_dict).keys():
+                        temp_len += len(mod_dict[sub_key])
+                        temp_list.append(mod_dict[sub_key])
                     else:
-                        raise ValueError
-                    new_dict[key] = ' '.join(tmp_list)
-            return new_dict
-        return wrapper
-    return decorator
+                        raise ValueError("Nope")
+                if temp_len == 0:
+                    out_dict[r_key] = "Empty value"
+                else:
+                    out_dict[r_key] = " ".join(temp_list)
+
+            return out_dict
+        return decoration
+    return decorator_function
 
 
 def add_method_to_instance(klass):
