@@ -31,23 +31,40 @@ def sums_of_str_elements_are_equal(func):
 
 
 def format_output(*required_keys):
-    def decorator(func):
-        def wrapper(*args):
-            data = func(*args)
-            formatted_dict = {}
-            for keys in required_keys:
-                try:
-                    found_data = " ".join(
-                        data[key] if data[key] else "Empty value" for key in
-                        keys.split("__"))
-                except KeyError:
+    def real_wrapper(func):
+        def insider_wrapper(*args):
+            got_dict = func(*args)
+            
+            list_of_keys = []
+            for record in required_keys:
+                for result in record.split('__'):
+                    list_of_keys.append(result)
+                    
+            list_of_values = []
+            help_dict = {}
+            for key in list_of_keys:
+                if(key in got_dict):
+                    dict_value = got_dict.get(key)
+                    if dict_value == '':
+                        help_dict[key] = "Empty value"
+                    else:
+                       help_dict[key] = dict_value
+                else:
                     raise ValueError
-                formatted_dict[keys] = found_data
-            return formatted_dict
-
-        return wrapper
-
-    return decorator
+            
+            help_list = [record.split('__') for record in required_keys]
+            response_dict = {}
+            
+            for record in help_list:
+                if len(record) > 1:
+                    value_list = [help_dict.get(key) for key in record]
+                    response_dict['__'.join(record)] = ' '.join(value_list)
+                else:
+                    response_dict[record[0]] = help_dict.get(record[0])
+                    
+            return response_dict                  
+        return insider_wrapper
+    return real_wrapper
 
 
 def add_method_to_instance(klass):
